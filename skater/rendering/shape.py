@@ -74,7 +74,7 @@ class Polygon(Shape):
             for vertex, next_vertex in vertex_pairs
         ]
 
-    def build_surface(self):
+    def build_surface_mask(self):
         """
         Builds a 2d array describing the shape on a rectangular surface
         """
@@ -94,31 +94,59 @@ class Polygon(Shape):
         # Get a 2D array of pixel values
         mask = np.array(img)
 
-        # Crate a pygame.Surface from the raw matrix
-        surface = pygame.surfarray.make_surface(mask)
-        return surface
+        return mask
 
+    def shift(self, delta):
+        self.vertices = [vertex + delta for vertex in self.vertices]
+
+    @property
     def left(self):
         return min(vertex.x for vertex in self.vertices)
-
+    
+    @property
     def right(self):
         return max(vertex.x for vertex in self.vertices)
 
+    @property
     def top(self):
         return min(vertex.y for vertex in self.vertices)
 
+    @property
     def bottom(self):
         return max(vertex.y for vertex in self.vertices)
 
-class Rectangle(Polygon):
-    def __init__(self, top_left, bottom_right):
-        """
-        Builds a Rectangle from the top_left and bottom_right vertices.
-        """
+    @property
+    def width(self):
+        return (self.right - self.left)
 
-        # Calculate the two remaining vertices
-        bottom_left = Point(top_left.x, bottom_right.y)
-        top_right = Point(bottom_right.x, top_left.y)
+    @property
+    def height(self):
+        return (self.bottom - self.top)
 
-        # Pass the full list of vertices to `super`
-        super().__init__([top_left, top_right, bottom_right, bottom_left])
+    @property
+    def x(self):
+        return self.left
+
+    @property 
+    def y(self):
+        return self.top
+
+    @x.setter
+    def x(self, value):
+        shift = value - self.x
+        self.shift([shift, 0])
+
+    @y.setter
+    def y(self, value):
+        shift = value - self.y
+        self.shift([0, shift])
+
+    @bottom.setter
+    def bottom(self, value):
+        shift = value - self.bottom
+        self.shift([0, shift])
+
+def rectangle(top_left, bottom_right):
+    bottom_left = Point(top_left.x, bottom_right.y)
+    top_right = Point(bottom_right.x, top_left.y)
+    return Polygon([top_left, top_right, bottom_right, bottom_left])

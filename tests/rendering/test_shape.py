@@ -1,11 +1,12 @@
 from math import sqrt
 from unittest import TestCase
 
+import numpy as np
 import pygame
 
 from skater.rendering.edge import Edge
 from skater.rendering.point import Point
-from skater.rendering.shape import Polygon, Rectangle
+from skater.rendering.shape import Polygon, rectangle
 
 """ A set of points used by the tests
 A---B
@@ -21,13 +22,6 @@ D = Point(0, 4)
 E = Point(4, 4)
 
 class TestPolygon(TestCase):
-    def assertPixelArrayLike(self, pix_arr, data):
-        pix_data = [
-            [pixel for pixel in row]
-            for row in pix_arr
-        ]
-        self.assertEqual(pix_data, data)
-
     def test_centre(self):
         polygon = Polygon([A, B, E, D])
         self.assertEqual(
@@ -51,23 +45,24 @@ class TestPolygon(TestCase):
             polygon.edges(),
             expected)
 
-    def test_build_surface(self):
+    def test_build_surface_mask(self):
         polygon = Polygon([A, B, C])
-        expected = [
+        expected = np.array([
             [1, 1, 1, 1, 1, 0],
             [0, 1, 1, 1, 0, 0],
             [0, 0, 1, 0, 0, 0],
             [0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0]
-        ]
-        self.assertPixelArrayLike(
-            pygame.PixelArray(polygon.build_surface()),
-            expected)
+        ])
+        self.assertTrue(
+            np.array_equal(
+                polygon.build_surface_mask(),
+                expected))
 
 
 class TestRectangle(TestCase):
     def test_creates_a_polygon(self):
         self.assertEqual(
-            Rectangle(A, E),
+            rectangle(A, E),
             Polygon([A, B, E, D]))
