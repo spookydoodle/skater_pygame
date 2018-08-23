@@ -146,6 +146,42 @@ class Polygon(Shape):
         shift = value - self.bottom
         self.shift([0, shift])
 
+    def distance_x(self, other):
+        """
+        Computes the shortest distance in the x direction.
+        """
+        # Distances between each vertex of `self` and edge of `other`
+        distances_to_other = [
+            edge.distance_x(vertex)
+            for vertex in self.vertices
+            for edge in other.edges()]
+
+        # Analogous; -1 due to an inverted orientation
+        distances_of_other = [
+            -1 * edge.distance_x(vertex)
+            for vertex in other.vertices
+            for edge in self.edges()
+        ]
+
+        return min(distances_to_other + distances_of_other, key=abs)
+
+    def distance_y(self, other):
+        """
+        Computes the shortest distance in the y direction.
+        """
+        distances_to_other = [
+            edge.distance_y(vertex)
+            for vertex in self.vertices
+            for edge in other.edges()]
+
+        distances_of_other = [
+            -1 * edge.distance_y(vertex)
+            for vertex in other.vertices
+            for edge in self.edges()
+        ]
+
+        return min(distances_to_other + distances_of_other, key=abs)
+
 def rectangle(top_left, bottom_right):
     bottom_left = Point(top_left.x, bottom_right.y)
     top_right = Point(bottom_right.x, top_left.y)

@@ -60,6 +60,26 @@ class TestPolygon(TestCase):
                 polygon.build_surface_mask(),
                 expected))
 
+    def test_distance_x_positive(self):
+        first = Polygon([A, D])
+        other = Polygon([B, C, E])
+        self.assertEqual(
+            first.distance_x(other),
+            2)
+
+    def test_distance_x_negative(self):
+        first = Polygon([B, E])
+        other = Polygon([A, C, D])
+        self.assertEqual(
+            first.distance_x(other),
+            -2)
+
+    def test_distance_y_positive(self):
+        first = Polygon([A, B])
+        other = Polygon([C, E, D])
+        self.assertEqual(
+            first.distance_y(other),
+            2)
 
 class TestRectangle(TestCase):
     def test_creates_a_polygon(self):

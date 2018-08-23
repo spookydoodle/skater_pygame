@@ -38,3 +38,27 @@ class TestEdge(TestCase):
         edge = Edge(D, B)
         self.assertFalse(
             edge.contains(A))
+
+    def test_matching_x(self):
+        edge = Edge(B, D)
+        self.assertEqual(
+            edge.matching_x(10),
+            90)
+
+    def test_matching_x_infinite_slope(self):
+        edge = Edge(B, E)
+        self.assertEqual(
+            edge.matching_x(10),
+            100)
+
+    def test_matching_y(self):
+        edge = Edge(B, D)
+        self.assertEqual(
+            edge.matching_y(90),
+            10)
+
+    def test_matching_y_infinite_slope(self):
+        edge = Edge(D, E)
+        self.assertEqual(
+            edge.matching_y(10),
+            100)
