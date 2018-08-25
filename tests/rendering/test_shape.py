@@ -1,4 +1,4 @@
-from math import sqrt
+from math import ceil, sqrt
 from unittest import TestCase
 
 import numpy as np
@@ -22,6 +22,7 @@ D = Point(0, 4)
 E = Point(4, 4)
 
 class TestPolygon(TestCase):
+    # TODO: group into classes by method
     def test_centre(self):
         polygon = Polygon([A, B, E, D])
         self.assertEqual(
@@ -32,7 +33,7 @@ class TestPolygon(TestCase):
         polygon = Polygon([A, B, E, D])
         self.assertEqual(
             polygon.radius(),
-            2 * sqrt(2))
+            ceil(2 * sqrt(2)))
 
     def test_edges(self):
         polygon = Polygon([A, B, C])

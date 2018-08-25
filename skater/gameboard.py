@@ -40,22 +40,22 @@ class GameBoard:
         return ans
 
     def limit_under(self, player):
-        limits = [
-            obstacle.rect.top
+        distances = [
+            player.rect.distance_y(obstacle.rect)
             for obstacle in self.obstacles_under(player)]
         
-        return min(limits + [self.MAX_POSITION])
+        return min(distances + [self.MAX_POSITION])
 
     def limit_right(self, player):
-        limits = [
-            obstacle.rect.left
+        distances = [
+            player.rect.distance_x(obstacle.rect)
             for obstacle in self.obstacles_right(player)]
-
-        return min(limits + [self.MAX_POSITION])
+        
+        return min(distances + [self.MAX_POSITION])
 
     def limit_left(self, player):
-        limits = [
-            obstacle.rect.right
+        distances = [
+            player.rect.distance_x(obstacle.rect)
             for obstacle in self.obstacles_left(player)]
 
-        return max(limits + [self.MIN_POSITION])
+        return max(distances + [self.MIN_POSITION])

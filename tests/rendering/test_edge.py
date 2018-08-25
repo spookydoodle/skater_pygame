@@ -5,7 +5,7 @@ from skater.rendering.point import Point
 
 """ A set of points used by the tests
 A---B
------
+-F---
 --C--
 -----
 D---E
@@ -15,6 +15,7 @@ B = Point(100, 0)
 C = Point(50, 50)
 D = Point(0, 100)
 E = Point(100, 100)
+F = Point(25, 25)
 
 class TestEdge(TestCase):
     def test_get_equation_params(self):
@@ -39,26 +40,35 @@ class TestEdge(TestCase):
         self.assertFalse(
             edge.contains(A))
 
-    def test_matching_x(self):
+    def test_distance_x(self):
         edge = Edge(B, D)
         self.assertEqual(
-            edge.matching_x(10),
-            90)
+            edge.distance_x(F),
+            50)
 
-    def test_matching_x_infinite_slope(self):
+    def test_distance_x_infinite_slope(self):
         edge = Edge(B, E)
         self.assertEqual(
-            edge.matching_x(10),
-            100)
+            edge.distance_x(F),
+            75)
 
-    def test_matching_y(self):
+    def test_distance_x_horizontal_line(self):
+        edge = Edge(
+            Point(3, 10),
+            Point(10, 10))
+        point = Point(0, 10)
+        self.assertEqual(
+            edge.distance_x(point),
+            3)
+
+    def test_distance_y(self):
         edge = Edge(B, D)
         self.assertEqual(
-            edge.matching_y(90),
-            10)
+            edge.distance_y(F),
+            50)
 
-    def test_matching_y_infinite_slope(self):
+    def test_distance_y_infinite_slope(self):
         edge = Edge(D, E)
         self.assertEqual(
-            edge.matching_y(10),
-            100)
+            edge.distance_y(F),
+            75)

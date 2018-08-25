@@ -26,7 +26,7 @@ class Player(pygame.sprite.Sprite):
         self.speed_unit = speed_unit
 
         self.image = image.Image.load(image_paths.PLAYER_MAIN)
-        self.rect = self.image.shape
+        self.rect = self.image.shape  # TODO: rename to shape
 
         # acceleration, velocity, mass - used for acceleration and deceleration. 
         # separate velocities for movement on x axis (right/left) and y axis (jump)
@@ -101,12 +101,8 @@ class Player(pygame.sprite.Sprite):
 
     def move_x(self, gameboard):
         # find x position of the closest obstacle edges on the right and left side of the player
-        # NOTE: this has to be computed *before* modifying self.rect.x
         limit_right = gameboard.limit_right(self)
         limit_left = gameboard.limit_left(self)
-
-        # update the position according to previously computed speed
-        self.rect.x += self.v_x
 
         # update the speed for the next iteration
         if not self.is_mid_air():
@@ -116,19 +112,22 @@ class Player(pygame.sprite.Sprite):
         # if speed is below a threshold, set it to zero
         if abs(self.v_x) <= self.ZERO:
             self.v_x = 0
+
+        # stop movement if collision on either side of the player takes place
+        if self.is_moving_right() and self.v_x > limit_right:
+            wall = self.rect.right + limit_right
+            self.stop_movement_x(wall - self.rect.width)
         
-        # stop movement if collision on the right of the player takes place
-        if self.is_moving_right() and self.rect.right > limit_right:
-            self.stop_movement_x(limit_right - self.rect.width)
+        elif self.is_moving_left() and self.v_x < limit_left:
+            wall = self.rect.left + limit_left
+            self.stop_movement_x(wall)
         
-        # stop movement if collision on the left of the player takes place
-        if self.is_moving_left() and self.rect.left < limit_left:
-            self.stop_movement_x(limit_left)
-            
+        else:
+            # Free movement -> update the position based on the speed
+            self.rect.x += self.v_x
 
     def move_y(self, gameboard):
-        # NOTE: this has to be computed *before* modifying self.rect.y
-        floor = gameboard.limit_under(self)
+        limit = gameboard.limit_under(self)
 
         # Calculate y-acceleration (gravity pull)
         a = self.m * self.G
@@ -136,13 +135,14 @@ class Player(pygame.sprite.Sprite):
         # Update y-speed with new acceleration
         self.v_y += a
 
-        # Update y-position
-        self.rect.y += self.v_y
-            
-        floor_hit = self.rect.bottom > floor
-        if floor_hit:
-            self.stop_movement_y(floor)
+        will_hit_floor = self.v_y > limit
 
+        if will_hit_floor:
+            floor = self.rect.bottom + limit
+            self.stop_movement_y(floor)
+        else:
+            # Update y-position
+            self.rect.y += self.v_y
 
     def jump(self):
         self.v_y = -self.speed_unit * self.LEAP_FORCE

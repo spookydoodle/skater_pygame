@@ -1,4 +1,4 @@
-from math import inf
+INFINITY = 2 ** 31
 
 class Edge:
     """
@@ -13,6 +13,9 @@ class Edge:
 
     def __eq__(self, other):
         return isinstance(other, Edge) and (self.start, self.end) == (other.start, other.end)
+
+    def vertices(self):
+        return [self.start, self.end]
 
     def get_equation_params(self):
         """
@@ -29,9 +32,9 @@ class Edge:
         # slope
         if (right.x == left.x):
             # infinite slope case
-            a = inf
+            a = INFINITY
         else:
-            a = (right.y - left.y) / (right.x - left.x)
+            a = (right.y - left.y) // (right.x - left.x)
 
         # offset
         b = left.y - a * left.x
@@ -58,9 +61,9 @@ class Edge:
         else:
             return False
 
-    def matching_x(self, y):
+    def distance_x(self, point):
         """
-        Given a fixed `y`, returns an `x` value that would make a point lie on the edge
+        Given a `point`, returns a shortest distance in the x axis from `self`
 
         Depends on the fact that Edges are linear functions.
 
@@ -70,39 +73,61 @@ class Edge:
             y = ax + b ->
             x = (y - b) / a
         """
+        # Check if point is already on the edge
+        if self.contains(point):
+            return 0
+
         a, b, x_boundaries, y_boundaries = self.get_equation_params()
         
-        if not(y_boundaries[0] <= y <= y_boundaries[1]):
+        if not(y_boundaries[0] <= point.y <= y_boundaries[1]):
             # y is outside of the edge boundaries -> `self` will never contain the point
-            return inf
-        elif a == inf:
-            # horizontal line -> x has to be equal to the line's x
-            return x_boundaries[0]
-        else:
-            return (y - b) // a
+            return INFINITY
 
-    def matching_y(self, x):
-        """
-        Given a fixed `x`, returns a `y` value that would make a point lie on the edge
-
-        Depends on the fact that Edges are linear functions.
-
-        TODO: a LinearFunction class
-
-        y = ax + b
-        """
-        a, b, x_boundaries, y_boundaries = self.get_equation_params()
+        if a == INFINITY:
+            # vertical line -> x has to be equal to the line's x
+            matching_x = x_boundaries[0]
         
-        if not(x_boundaries[0] <= x <= x_boundaries[1]):
-            return inf
-        elif a == inf:
-            # a is a horizontal line -> any y will do
-            return x
-        else:
-            return a * x + b
+        elif a == 0:
+            # horizontal line -> any y will do -> return distance to the nearest point
+            # a is a horizontal line ->
+            assert(y_boundaries[0] == y_boundaries[1])
+            # ... and `point` lies within the `y_boundaries` ->
+            assert(point.y == y_boundaries[0])
 
-    def distance_x(self, point):
-        return self.matching_x(point.y) - point.x
+            # `point` is aligned with the line -> return the nearest edge vertex
+            nearest_vertex = min(
+                self.vertices(),
+                key=lambda v: abs(v.x - point.x))
+            matching_x = nearest_vertex.x
+        
+        else:
+            matching_x = (point.y - b) // a
+        
+        return matching_x - point.x
 
     def distance_y(self, point):
-        return self.matching_y(point.x) - point.y
+        if self.contains(point):
+            return 0
+
+        a, b, x_boundaries, y_boundaries = self.get_equation_params()
+        
+        if not(x_boundaries[0] <= point.x <= x_boundaries[1]):
+            return INFINITY
+
+        if a == INFINITY:
+            assert(x_boundaries[0] == x_boundaries[1])
+            assert(point.x == x_boundaries[0])
+
+            distances = [vertex.y - point.y for vertex in self.vertices()]
+            nearest_vertex = min(
+                self.vertices(),
+                key=lambda v: abs(v.y - point.y))
+            matching_y = nearest_vertex.y
+        
+        elif a == 0:
+            matching_y = y_boundaries[0]
+        
+        else:
+            matching_y = a * point.x + b
+        
+        return matching_y - point.y

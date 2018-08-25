@@ -13,6 +13,8 @@ class Shape:
 
     Currently, `Polygon` is the only implemented type. This class is meant to be
     a common ancestor for future, non-polygon shapes (i.e. circles / splines).
+
+    NOTE: all logic in this module will only work if the passed in indices are integers, not floats
     """
     pass
 
@@ -60,7 +62,7 @@ class Polygon(Shape):
             sqrt(pair[0] ** 2 + pair[1] ** 2)
             for pair in distance_pairs]
 
-        return max(distances)
+        return ceil(max(distances))
 
     def edges(self):
         # a list of self.vertives, but shifted by 1 index
@@ -78,8 +80,7 @@ class Polygon(Shape):
         """
         Builds a 2d array describing the shape on a rectangular surface
         """
-        radius = ceil(self.radius())  # numpy expect an integer -> ceil
-        size = 2 * radius
+        size = 2 * self.radius()
 
         # Create an empty spline image
         img = Image.new('L', (size, size))
@@ -133,16 +134,19 @@ class Polygon(Shape):
 
     @x.setter
     def x(self, value):
+        value = round(value)
         shift = value - self.x
         self.shift([shift, 0])
 
     @y.setter
     def y(self, value):
+        value = round(value)
         shift = value - self.y
         self.shift([0, shift])
 
     @bottom.setter
     def bottom(self, value):
+        value = round(value)
         shift = value - self.bottom
         self.shift([0, shift])
 
