@@ -34,7 +34,7 @@ class Edge:
             # infinite slope case
             a = INFINITY
         else:
-            a = (right.y - left.y) // (right.x - left.x)
+            a = (right.y - left.y) / (right.x - left.x)
 
         # offset
         b = left.y - a * left.x

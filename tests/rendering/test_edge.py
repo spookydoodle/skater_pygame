@@ -30,6 +30,14 @@ class TestEdge(TestCase):
             edge.get_equation_params(),
             (1, 0, (50, 100), (50, 100)))
 
+    def test_get_equation_params_non_integer_slope(self):
+        edge = Edge(
+            Point(0, 0),
+            Point(10, 1))
+        self.assertEqual(
+            edge.get_equation_params(),
+            (0.1, 0, (0, 10), (0, 1)))
+
     def test_contains_positive(self):
         edge = Edge(D, B)
         self.assertTrue(
