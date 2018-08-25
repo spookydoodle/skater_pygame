@@ -3,9 +3,8 @@ from unittest import TestCase
 
 from skater.obstacles import Obstacle
 from skater import image, image_paths
-
-from .mock_rect import shifted, makeMockRect
-
+from skater.rendering.point import Point
+from skater.rendering.shape import Polygon
 
 class TestObstacle(TestCase):
     """
@@ -22,21 +21,21 @@ class TestObstacle(TestCase):
         screen = pygame.display.set_mode(size)  # FIXME: decouple Obstacle from pygame.display
         img = image.Image.load(image_paths.PLAYER_MAIN)  # some image is needed to construct an Obstacle
         self.obstacle = Obstacle(img)
-        self.base_rect = makeMockRect(self.obstacle.rect)
+        self.base_rect = self.obstacle.rect
 
         # Overlapping rectangles
-        self.rect_above = shifted(self.base_rect, y_shift=-10)
-        self.rect_below = shifted(self.base_rect, y_shift=10)
-        self.rect_left = shifted(self.base_rect, x_shift=-10)
-        self.rect_right = shifted(self.base_rect, x_shift=10)
+        self.rect_above = self.base_rect.shifted(y_shift=-10)
+        self.rect_below = self.base_rect.shifted(y_shift=10)
+        self.rect_left = self.base_rect.shifted(x_shift=-10)
+        self.rect_right = self.base_rect.shifted(x_shift=10)
 
         # Non-overlapping rectangles
         x_offset = self.obstacle.rect.width
         y_offset = self.obstacle.rect.height
-        self.rect_far_above = shifted(self.base_rect, y_shift=-(10 + y_offset))
-        self.rect_far_below = shifted(self.base_rect, y_shift=10 + y_offset)
-        self.rect_far_left = shifted(self.base_rect, x_shift=-(10 + x_offset))
-        self.rect_far_right = shifted(self.base_rect, x_shift=10 + x_offset)
+        self.rect_far_above = self.base_rect.shifted(y_shift=-(10 + y_offset))
+        self.rect_far_below = self.base_rect.shifted(y_shift=10 + y_offset)
+        self.rect_far_left = self.base_rect.shifted(x_shift=-(10 + x_offset))
+        self.rect_far_right = self.base_rect.shifted(x_shift=10 + x_offset)
 
 class TestIsUnder(TestObstacle):
     def test_is_under_is_true_for_rect_above(self):

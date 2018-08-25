@@ -35,6 +35,15 @@ class Polygon(Shape):
     def __eq__(self, other):
         return isinstance(other, Polygon) and self.vertices == other.vertices
 
+    def clone(self):
+        return Polygon(self.vertices[:])
+
+    def shifted(self, x_shift=0, y_shift=0):
+        result = self.clone()
+        result.x += x_shift
+        result.y += y_shift
+        return result
+
     def centre(self):
         """
         Geometrical centre of the Polygon.
