@@ -1,4 +1,4 @@
-INFINITY = 2 ** 31
+from math import inf
 
 class Edge:
     """
@@ -32,7 +32,7 @@ class Edge:
         # slope
         if (right.x == left.x):
             # infinite slope case
-            a = INFINITY
+            a = inf
         else:
             a = (right.y - left.y) / (right.x - left.x)
 
@@ -81,9 +81,9 @@ class Edge:
         
         if not(y_boundaries[0] <= point.y <= y_boundaries[1]):
             # y is outside of the edge boundaries -> `self` will never contain the point
-            return INFINITY
+            return inf
 
-        if a == INFINITY:
+        if a == inf:
             # vertical line -> x has to be equal to the line's x
             matching_x = x_boundaries[0]
         
@@ -112,9 +112,9 @@ class Edge:
         a, b, x_boundaries, y_boundaries = self.get_equation_params()
         
         if not(x_boundaries[0] <= point.x <= x_boundaries[1]):
-            return INFINITY
+            return inf
 
-        if a == INFINITY:
+        if a == inf:
             assert(x_boundaries[0] == x_boundaries[1])
             assert(point.x == x_boundaries[0])
 
