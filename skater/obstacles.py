@@ -1,3 +1,5 @@
+from math import inf
+
 import pygame
 from pygame.locals import *
 
@@ -24,37 +26,21 @@ class Obstacle(pygame.sprite.Sprite):
         """
         Checks if `self` is located over `other_rect`, regardless of the distance
         """
-        return self.rect.top <= other_rect.bottom and self.rect.top < other_rect.top \
-            and self.rect.left < other_rect.right and self.rect.right > other_rect.left
+        distance = other_rect.distance_y(self.rect)
+        return distance != inf and distance < 0
 
     def is_to_the_right(self, other_rect):
         """
         Checks if `self` is located to the right of `other_rect`, regardless of the distance
+
+        `self` is on the right if the x_distance `other -> self` > 0
         """
-        return self.rect.right > other_rect.right and self.rect.right > other_rect.left \
-            and self.rect.top < other_rect.bottom and self.rect.bottom > other_rect.top
+        distance = other_rect.distance_x(self.rect)
+        return distance != inf and distance > 0
 
     def is_to_the_left(self, other_rect):
         """
         Checks if `self` is located to the left of `other_rect`, regardless of the distance
         """
-        return self.rect.left < other_rect.left and self.rect.left < other_rect.right \
-            and self.rect.top < other_rect.bottom and self.rect.bottom > other_rect.top
-
-    def is_colliding_right(self, other_rect):
-        """
-        Checks for a collision (overlap) on the right border of `self`
-
-        (collision player right - obstacle left)
-        """
-        return self.rect.right >= other_rect.left and self.rect.right <= other_rect.right \
-            and self.rect.bottom <= other_rect.bottom and self.rect.bottom >= other_rect.top
-    
-    def is_colliding_left(self, other_rect):
-        """
-        Checks for a collision (overlap) on the left border of `self`
-
-        (collision player left - obstacle right)
-        """
-        return self.rect.left <= other_rect.right and self.rect.left >= other_rect.left \
-            and self.rect.bottom <= other_rect.bottom and self.rect.bottom >= other_rect.top
+        distance = other_rect.distance_x(self.rect)
+        return distance != inf and distance < 0

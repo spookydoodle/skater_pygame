@@ -40,22 +40,23 @@ class GameBoard:
         return ans
 
     def limit_under(self, player):
-        limits = [
-            obstacle.rect.top
+        distances = [
+            player.rect.distance_y(obstacle.rect)  # FIXME: there should be a `-1` here, but it causes the player to unexpectedly stop in some cases
             for obstacle in self.obstacles_under(player)]
         
-        return min(limits + [self.MAX_POSITION])
+        return min(distances + [self.MAX_POSITION])
 
     def limit_right(self, player):
-        limits = [
-            obstacle.rect.left
+        # `player` should never overlap with the gameboard -> limit the movement 1 pixel before the border
+        distances = [
+            player.rect.distance_x(obstacle.rect) - 1
             for obstacle in self.obstacles_right(player)]
-
-        return min(limits + [self.MAX_POSITION])
+        
+        return min(distances + [self.MAX_POSITION])
 
     def limit_left(self, player):
-        limits = [
-            obstacle.rect.right
+        distances = [
+            player.rect.distance_x(obstacle.rect) + 1
             for obstacle in self.obstacles_left(player)]
 
-        return max(limits + [self.MIN_POSITION])
+        return max(distances + [self.MIN_POSITION])
